@@ -1,0 +1,127 @@
+{
+	"schema": "com.autodesk.netfabborm.schema",
+	"version": "1.1.0",
+
+	"mappings": [
+		{
+			"name": "MACHINE_POOL_GROUP",
+			"primarykey": "MP_ID",
+			"fields": [
+				{
+					"key": "MP_ID",
+					"type": "uuid",
+					"unique": true
+				},
+				{
+					"key": "MP_NAME",
+					"type": "varchar"
+				},			
+				{
+					"key": "MP_DESCRIPTION",
+					"type": "varchar"
+				},			
+				{
+					"key": "MP_PARENT",
+					"type": "text"
+				},			
+				{
+					"key": "MP_ICON",
+					"type": "blob"
+				},
+				{
+					"key": "MP_ORDER_INDEX",
+					"type": "integer"
+				}
+				
+			]
+		},
+		
+		{
+			"name": "MACHINE_POOL_MACHINE",
+			"primarykey": "MP_ID",
+			"fields": [
+				{
+					"key": "MP_ID",
+					"type": "uuid",
+					"unique": true
+				},
+				{
+					"key": "MP_NAME",
+					"type": "varchar"
+				},			
+				{
+					"key": "MP_DESCRIPTION",
+					"type": "varchar"
+				},			
+				{
+					"key": "MP_MANUFACTURER",
+					"type": "varchar"
+				},			
+				{
+					"key": "MP_TECHNOLOGY",
+					"type": "varchar"
+				},			
+				{
+					"key": "MP_ICON",
+					"type": "blob"
+				},			
+				{
+					"key": "MP_PLATFORMSIZE",
+					"type": "varchar"
+				},			
+				{
+					"key": "MP_START_WITH",
+					"type": "integer"
+				},			
+				{
+					"key": "MP_ENGINE",
+					"type": "uuid"
+				},			
+				{
+					"key": "MP_WORKSPACE",
+					"type": "uuid"
+				},			
+				{
+					"key": "MP_MACHINE_GROUP",
+					"type": "uuid"
+				},			
+				{
+					"key": "MP_TIER",
+					"type": "integer"
+				},			
+				{
+					"key": "MP_LASERCOUNT",
+					"type": "integer"
+				},			
+				{
+					"key": "MP_SETTINGS",
+					"type": "blob",
+					"allownull": true
+				},			
+				{
+					"key": "MP_SUPPORTSCRIPT",
+					"type": "blob",
+					"allownull": true
+				},			
+				{
+					"key": "MP_REPAIRSCRIPT",
+					"type": "blob",
+					"allownull": true
+				},			
+				{
+					"key": "MP_DEFAULT_PARTS",
+					"type": "blob",
+					"allownull": true
+				},			
+				{
+					"key": "MP_ORDER_INDEX",
+					"type": "integer"
+				}
+				
+			]
+		}
+				
+	
+	]
+}
+

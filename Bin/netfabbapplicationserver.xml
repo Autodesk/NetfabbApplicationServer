@@ -1,0 +1,28 @@
+<!--
+ Netfabb Application Server
+-->
+
+<config xmlns="http://schemas.autodesk.com/netfabb/applicationserver/2018/11">
+
+	<server host="127.0.0.1" port="8650" />	
+	
+	<log prefix="./logs/log_" />
+
+	<data directory="./data/" />
+	
+	<database type="sqlite" filename="netfabbapplicationserver.db" />
+	
+	<https type="tls" certificate="example.crt" privatekey="example.key" />
+		
+	<authentication type="passphrase" sessionduration="36000"> 
+	
+		<global passphrase="admin" salt="" />
+	
+		<nameduser id="GSM8MPQXTZDA" passphrase="b727bc64862e65e24b4a86c5bd1826cd738e167d" salt="X1234" /> 
+	
+	
+	</authentication>
+		
+</config>
+
+

@@ -12,7 +12,7 @@ The "Netfabb Application Server" (short: NAS) is a server (or: service) program 
 As a starting point please look into the "doc" directory.
 
 ## Contributing
-The Automatic Component Toolkit is an open source project.
+NAS is an open source project.
 Contributions are welcome and we are looking for people that can improve existing language bindings or create new bindings or implementation stubs. Have a look at the [contributor's guide](CONTRIBUTING.md) for details.
 
 ## License and 3rd party acknowledgements

@@ -13,7 +13,7 @@ As a starting point please look into the "doc" directory.
 
 ## Contributing
 NAS is an open source project.
-Contributions are welcome and we are looking for people that can improve existing language bindings or create new bindings or implementation stubs. Have a look at the [contributor's guide](CONTRIBUTING.md) for details.
+Contributions are welcome and we are looking for people that can improve existing functionality or create new integrations. Have a look at the [contributor's guide](CONTRIBUTING.md) for details.
 
 ## License and 3rd party acknowledgements
 * NAS has a [BSD-3-Clause license](LICENSE.md)

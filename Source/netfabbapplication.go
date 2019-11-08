@@ -273,6 +273,7 @@ func RESTHandler (w http.ResponseWriter, r *http.Request) {
 			
 		// Create DB Connection
 		db, err := OpenDB (GlobalConfig.Database.Type, GlobalConfig.Database.FileName);
+		defer db.Close()
 		if (err == nil) {
 		
 			success := false;

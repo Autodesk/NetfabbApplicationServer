@@ -97,6 +97,7 @@ func initSessionDB(dbPrefix string) (error, string) {
 	if err != nil {
 		return err, SessionDBFileName
 	}
+	db.SetMaxOpenConns(1)
 
 	query := "CREATE TABLE `sessions` (" +
 		"`sessionuuid`	varchar ( 64 ) NOT NULL UNIQUE," +

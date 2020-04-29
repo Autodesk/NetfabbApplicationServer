@@ -74,11 +74,6 @@ pipeline {
                                 sign(pwd() + '\\output\\PasswordSalter.exe')
                             }
                         }
-                        stage ('Build') {
-                            steps {
-                                bat 'build_jenkins.bat'
-                            }
-                        }
                         stage ('Artifactory') {
                             steps {
                                 script {

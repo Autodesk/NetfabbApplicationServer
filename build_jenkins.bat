@@ -11,6 +11,7 @@ set ApplicationServer=%Binpath%\NetfabbApplicationServer.exe
 set ApplicationService=%Binpath%\NetfabbApplicationService.exe
 set TaskServer=%Binpath%\NetfabbTaskServer.exe
 set ServiceBatch=%Binpath%\setup_firewall_rules.bat
+set GOEXE=C:\Go\bin\go.exe
 
 :: GO Package Settings
 set PackageGoSqlite=github.com/mattn/go-sqlite3
@@ -39,9 +40,9 @@ if exist NetfabbTaskServer.exe del NetfabbTaskServer.exe
 if exist NetfabbStorageServer.exe del NetfabbStorageServer.exe
 cd /d %Sourcepath%
 echo Building Application Server
-go build -o %ApplicationServer% %applicationserver_source% %common_source% 
+call %GOEXE% build -o %ApplicationServer% %applicationserver_source% %common_source% 
 echo Building Application Service
-go build -o %ApplicationService% %applicationservice_source% %common_source% 
+call %GOEXE% build -o %ApplicationService% %applicationservice_source% %common_source% 
 REM echo Building Task Server
 REM go build -o %TaskServer% %taskserver_source% %common_source%
 cd /d %Scriptpath%

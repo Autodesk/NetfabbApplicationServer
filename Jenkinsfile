@@ -77,8 +77,8 @@ pipeline {
                         stage ('Artifactory') {
                             steps {
                                 script {
-                                    artifactoryUpload('/output/Netfabb_Application_Server.docx')
-                                    artifactoryUpload('/output/Netfabb_Application_Server.pdf')
+                                    artifactoryUpload('/output/Documentation/Netfabb_Application_Server.docx')
+                                    artifactoryUpload('/output/Documentation/Netfabb_Application_Server.pdf')
                                     artifactoryUpload('/output/example.crt')
                                     artifactoryUpload('/output/example.key')
                                     artifactoryUpload('/output/favicon.ico')

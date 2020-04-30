@@ -1,82 +1,102 @@
-@ECHO OFF
-:: Path Settings
-set Scriptpath=%~dp0
-set Binpath=%Scriptpath%Bin
-set Docpath=%Scriptpath%doc
-set PWSalterpath=%Scriptpath%PasswordSalter
-set Examplepath=%Scriptpath%example
-set Sourcepath=%Scriptpath%Source
-set Outputpath=%Scriptpath%output
-set ApplicationServer=%Binpath%\NetfabbApplicationServer.exe
-set ApplicationService=%Binpath%\NetfabbApplicationService.exe
-set TaskServer=%Binpath%\NetfabbTaskServer.exe
-set ServiceBatch=%Binpath%\setup_firewall_rules.bat
-set GOEXE=C:\Go\bin\go.exe
+@Library('PSL')
+import ors.utils.common_scm
+import ors.ci.common_ci
 
-:: GO Package Settings
-set PackageGoSqlite=github.com/mattn/go-sqlite3
-set PackageGoUuid=github.com/twinj/uuid
 
-:: GO File Lists
-set common_source=netfabbstorage_db.go netfabbstorage_types.go netfabbstorage_utils.go netfabbstorage_auth.go netfabbstorage_orm.go netfabbstorage_data.go netfabbtask_handler.go netfabbapplication.go
-set taskserver_source=netfabbtaskserver.go netfabbtask_config.go 
-set applicationserver_source=netfabbapplicationserver.go netfabbstorage_config.go
-set applicationservice_source=netfabbapplicationservice.go netfabbstorage_config.go service.go
+winNode = "netfabb_build_win10_2"
 
-::echo Install required GO packages
-::go get %PackageGoSqlite% %PackageGoUuid%
-if %errorlevel% == 0 (
-  goto buildServers
-) else (
-  goto END
+String cron_string = BRANCH_NAME == "master" ? "11 11 * * *" : ""
+properties (
+    [
+        pipelineTriggers([[$class: 'TimerTrigger', spec: cron_string]])
+    ]
 )
 
+@NonCPS
+def artifactoryUpload(String fileToUpload)
+{    
+    common_artifactory=new ors.utils.common_artifactory(steps,env,Artifactory,'svc_p_netfabbjenkins')
+    def uploadSpec = """{
+        "files": [
+                {
+                    "pattern": "${fileToUpload}",
+                    "target": "team-netfabb-generic/NetfabbApplicationServer/${env.BRANCH_NAME}/"
+                }
+            ]
+        }"""
+    try {
+      common_artifactory.upload('https://art-bobcat.autodesk.com/artifactory/',uploadSpec)
+    } catch (Exception e){
+      echo "ERROR: Caught exception in artifactoryUpload: " + e
+    }        
+}
 
-:buildServers
-cd /d %Binpath%
-if exist NetfabbApplicationServer.exe del NetfabbApplicationServer.exe
-if exist NetfabbApplicationService.exe del NetfabbApplicationService.exe
-if exist NetfabbTaskServer.exe del NetfabbTaskServer.exe
-if exist NetfabbStorageServer.exe del NetfabbStorageServer.exe
-cd /d %Sourcepath%
-echo Building Application Server
-call %GOEXE% build -o %ApplicationServer% %applicationserver_source% %common_source% 
-echo Building Application Service
-call %GOEXE% build -o %ApplicationService% %applicationservice_source% %common_source% 
-REM echo Building Task Server
-REM go build -o %TaskServer% %taskserver_source% %common_source%
-cd /d %Scriptpath%
-if %errorlevel% == 0 (
-  goto buildPasswordSalter
-) else (
-  goto END
-)
-
-:buildPasswordSalter
-cd /d %PWSalterpath%
-if exist PasswordSalter.exe del PasswordSalter.exe
-echo Building PasswordSalter
-go build
-cd /d %Scriptpath%
-if %errorlevel% == 0 (
-  goto prepareOutputDir
-) else (
-  goto END
-)
+def sign(String fileToSign){
+  withCredentials([string(credentialsId: 'OTP_KEY', variable: 'OTP_KEY')]) {
+    bat "C:\\signing\\sign.bat ${fileToSign} ${OTP_KEY}"
+  }
+}
 
 
-:prepareOutputDir
-echo Preparing Output DIR
-if not exist %Outputpath% mkdir %Outputpath%
-cd /d %Outputpath%
-for /F "delims=" %%i in ('dir /b') do (rmdir "%%i" /s/q || del "%%i" /s/q)
-cd /d %Scriptpath% 
-if not exist %Outputpath%Examples mkdir %Outputpath%\Examples
-if not exist %Outputpath%Documentation mkdir %Outputpath%\Documentation
-xcopy /s /i %Binpath%\* %Outputpath%
-xcopy /s /i %PWSalterpath%\PasswordSalter.exe %Outputpath%
-xcopy /s /i %Examplepath%\* %Outputpath%\Examples
-xcopy /s /i %Docpath%\* %Outputpath%\Documentation
-
-:END
-echo Done creating Application Server
+pipeline {
+    agent none
+    options {
+        disableConcurrentBuilds()
+        skipDefaultCheckout true
+    }
+    stages{
+        stage ('Build') {
+            parallel {
+                stage ('Build Windows') {
+                    agent {
+                        node {
+                            label winNode
+                            customWorkspace 'E:\\NAS'
+                        }
+                    }
+                    stages {
+                        stage ('Update GIT') {
+                            steps {
+                                checkout scm
+                                bat 'git fetch upstream'
+                                bat 'git merge upstream/master'
+                            }
+                        }
+                        stage ('Build') {
+                            steps {
+                                bat 'build_jenkins.bat'
+                            }
+                        }
+                        stage ('Signing') {
+                            steps {
+                                sign(pwd() + '\\output\\NetfabbApplicationServer.exe')
+                                sign(pwd() + '\\output\\NetfabbApplicationService.exe')
+                                sign(pwd() + '\\output\\PasswordSalter.exe')
+                            }
+                        }
+                        stage ('Artifactory') {
+                            steps {
+                                script {
+                                    artifactoryUpload('/output/Netfabb_Application_Server.docx')
+                                    artifactoryUpload('/output/Netfabb_Application_Server.pdf')
+                                    artifactoryUpload('/output/example.crt')
+                                    artifactoryUpload('/output/example.key')
+                                    artifactoryUpload('/output/favicon.ico')
+                                    artifactoryUpload('/output/netfabbapplicationserver.db')
+                                    artifactoryUpload('/output/netfabbapplicationserver.db.shipping')
+                                    artifactoryUpload('/output/NetfabbApplicationServer.exe')
+                                    artifactoryUpload('/output/netfabbapplicationserver.xml')
+                                    artifactoryUpload('/output/NetfabbApplicationService.exe')
+                                    artifactoryUpload('/output/netfabbormschemas.json')
+                                    artifactoryUpload('/output/netfabbtasks.db')
+                                    artifactoryUpload('/output/PasswordSalter.exe')
+                                    artifactoryUpload('/output/setup_firewall_rules.bat')
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

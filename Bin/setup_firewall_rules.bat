@@ -8,7 +8,7 @@ echo Do you want to add or remove the firewall rules:
 echo 1: Add
 echo 2: Remove
 set INPUT=
-set /P INPUT=Type input # and enter: %=%
+set /P INPUT=Type input # and press enter: %=%
 
 if /I %INPUT% == 1 set installOrUninstall=install
 if /I %INPUT% == 2 set installOrUninstall=uninstall

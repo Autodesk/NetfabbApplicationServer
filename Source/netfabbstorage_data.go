@@ -402,7 +402,7 @@ func StorageBinaryUploadHandler (db *sql.DB, session * NetStorageSession, w http
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // StorageEntityUpdateHandler
-// updates an entity db entry
+// handles a /entities/<uuid> POST request and updates an entity db entry
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func StorageEntityUpdateHandler (db *sql.DB, session * NetStorageSession, w http.ResponseWriter, r *http.Request, entityuuid string) error {
@@ -451,7 +451,7 @@ func StorageEntityUpdateHandler (db *sql.DB, session * NetStorageSession, w http
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // StorageDownloadHandler
-// downloads the content of an entity
+// handles a /download/<uuid> GET request and downloads the content of an entity
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
